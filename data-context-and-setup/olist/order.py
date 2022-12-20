@@ -55,7 +55,17 @@ class Order:
         Returns a DataFrame with:
         order_id, dim_is_five_star, dim_is_one_star, review_score
         """
-        pass  # YOUR CODE HERE
+        reviews = self.data['order_reviews'].copy()
+
+        dim_is_one_star = lambda x: int(x==1)
+        dim_is_five_star = lambda x: int(x==5)
+
+        reviews['dim_is_five_star'] = reviews['review_score'].apply(dim_is_five_star)
+        reviews['dim_is_one_star'] = reviews['review_score'].apply(dim_is_one_star)
+
+        return reviews[[
+            "order_id", "dim_is_five_star", "dim_is_one_star", "review_score"
+            ]]
 
     def get_number_products(self):
         """
