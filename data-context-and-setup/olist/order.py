@@ -108,7 +108,22 @@ class Order:
         Returns a DataFrame with:
         order_id, distance_seller_customer
         """
-        pass  # YOUR CODE HERE
+        data = self.data
+        orders = data['orders']
+        order_items = data['order_items']
+        sellers = data['sellers']
+        customers = data['customers']
+
+        # since one zip code can map to multiple lat/lon, take the first one
+        geo = data['geolocation']
+        geo = geo.groupby('geolocation_zip_code_prefix', as_index=False).first()
+
+        # merge geolocation for sellers
+        
+
+
+
+
 
     def get_training_data(self,
                           is_delivered=True,
