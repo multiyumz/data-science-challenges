@@ -14,6 +14,7 @@ class Olist:
             # Use __file__ instead as an absolute path anchor independant of your usename
             # Make extensive use of `breakpoint()` to investigate what `__file__` variable is really
         # Hint 2: Use os.path library to construct path independent of Mac vs. Unix vs. Windows specificities
+
         root_dir = os.path.dirname(os.path.dirname(__file__))
         csv_path = os.path.join(root_dir, "data", "csv")
 
