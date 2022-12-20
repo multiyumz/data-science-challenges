@@ -96,7 +96,11 @@ class Order:
         Returns a DataFrame with:
         order_id, price, freight_value
         """
-        pass  # YOUR CODE HERE
+        price_freight = self.data['order_items'].copy()
+
+        price_freight = price_freight.groupby('order_id', as_index=False).agg({'price': 'sum', 'freight_value': 'sum'})
+
+        return price_freight[['order_id', 'price', 'freight_value']]
 
     # Optional
     def get_distance_seller_customer(self):
