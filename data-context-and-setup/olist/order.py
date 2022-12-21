@@ -119,11 +119,48 @@ class Order:
         geo = geo.groupby('geolocation_zip_code_prefix', as_index=False).first()
 
         # merge geolocation for sellers
-        
+        sellers_mask_columns = ['seller_id', 'seller_zip_code_prefix', 'geolocation_lat', 'geolocation_lng']
 
+        sellers_geo = sellers.merge(
+                            geo,
+                            how='left',
+                            left_on='seller_zip_code_prefix',
+                            right_on='geolocation_zip_code_prefix')[sellers_mask_columns]
 
+        # merge geolocation for customers
+        customers_mask_columns = ['customer_id', 'customer_zip_code_prefix', 'geolocation_lat', 'geolocation_lng']
 
+        customers_geo = customers.merge(
+                            geo,
+                            how='left',
+                            left_on='customer_zip_code_prefix',
+                            right_on='geolocation_zip_code_prefix')[customers_mask_columns]
 
+        # match customers with sellers in one table
+        customer_sellers = customers.merge(orders, on='customer_id')\
+        .merge(order_items, on='order_id')\
+        .merge(sellers, on='seller_id')\
+        [['order_id', 'customer_id','customer_zip_code_prefix', 'seller_id', 'seller_zip_code_prefix']]
+
+        # add the geoloc
+        matching_geo = customer_sellers.merge(sellers_geo, on='seller_id')\
+                    .merge(customers_geo, on='customer_id', suffixes=('_seller', '_customer'))
+
+        # drop na()
+        matching_geo = matching_geo.dropna()
+
+        matching_geo.loc[:, 'distance_seller_customer'] = \
+            matching_geo.apply(lambda row: haversine_distance(row['geolocation_lat_seller'],
+                                                              row['geolocation_lng_seller'],
+                                                              row['geolocation_lat_customer'],
+                                                              row['geolocation_lng_customer']),
+                                                              axis=1)
+
+        # Since an order can have multiple sellers,
+        # return the average of the distance per order
+        order_distance = matching_geo.groupby('order_id', as_index=False).agg({'distance_seller_customer': 'mean'})
+
+        return order_distance
 
     def get_training_data(self,
                           is_delivered=True,
@@ -136,4 +173,18 @@ class Order:
         'distance_seller_customer']
         """
         # Hint: make sure to re-use your instance methods defined above
-        pass  # YOUR CODE HERE
+        training_set = self.get_wait_time(is_delivered)\
+            .merge(
+                self.get_review_score(), on='order_id')\
+            .merge(
+                self.get_number_products(), on='order_id')\
+            .merge(
+                self.get_number_sellers(), on='order_id')\
+            .merge(
+                self.get_price_and_freight(), on='order_id')\
+
+        if with_distance_seller_customer:
+            training_set = training_set.merge(
+                self.get_distance_seller_customer(), on='order_id')
+
+        return training_set.dropna()
