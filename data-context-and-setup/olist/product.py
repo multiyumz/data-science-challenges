@@ -141,5 +141,11 @@ class Product:
         - `product_weight_g`: mean or median weight per category
         - ...
         '''
-        pass  # YOUR CODE HERE
+        products = self.get_training_data()
 
+        columns = list(products.select_dtypes(exclude=['object']).columns)
+        agg_params = dict(zip(columns, [agg] * len(columns)))
+        agg_params['quantity'] = 'sum'
+
+        product_cat = products.groupby("category").agg(agg_params)
+        return product_cat
