@@ -146,6 +146,7 @@ class Seller:
         order_sellers = self.data['order_items'][['order_id', 'seller_id']].drop_duplicates()
 
         df = order_sellers.merge(order_reviews, on='order_id')
+
         result = df.groupby('seller_id', as_index=False).agg(
             {'dim_is_five_star': 'mean',
             'dim_is_one_star': 'mean',
