@@ -182,4 +182,6 @@ class Seller:
             training_set = training_set.merge(self.get_review_score(),
                                               on='seller_id')
 
+            
+
         return training_set
