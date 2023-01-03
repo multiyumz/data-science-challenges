@@ -188,10 +188,12 @@ class Seller:
                 self.get_sales(), on='seller_id'
                )
 
-        # if self.get_review_score() is not None:
-        #     training_set = training_set.merge(self.get_review_score(),
-        #                                       on='seller_id')
+        olist_monthly_fee = 80
+        olist_sales_cut = 0.1
 
+        training_set['revenues'] = training_set['months_on_olist'] * olist_monthly_fee \
+            + training_set['sales'] * olist_sales_cut
 
+        training_set['profits'] = training_set['revenues'] - training_set['cost_of_review']
 
         return training_set
