@@ -147,12 +147,20 @@ class Seller:
 
         df = order_sellers.merge(order_reviews, on='order_id')
 
+        df['cost_of_review'] = df.review_score.map({
+                                1: 100,
+                                2: 50,
+                                3: 40,
+                                4: 0,
+                                5: 0})
+
         result = df.groupby('seller_id', as_index=False).agg(
             {'dim_is_five_star': 'mean',
             'dim_is_one_star': 'mean',
-            'review_score': 'mean'})
+            'review_score': 'mean',
+            'cost_of_review': 'sum'})
 
-        result.columns = ['seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score']
+        result.columns = ['seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score', 'cost_of_review']
 
         return result
 
@@ -173,15 +181,17 @@ class Seller:
                ).merge(
                 self.get_active_dates(), on='seller_id'
                ).merge(
+                self.get_review_score(), on='seller_id'
+               ).merge(
                 self.get_quantity(), on='seller_id'
                ).merge(
                 self.get_sales(), on='seller_id'
                )
 
-        if self.get_review_score() is not None:
-            training_set = training_set.merge(self.get_review_score(),
-                                              on='seller_id')
+        # if self.get_review_score() is not None:
+        #     training_set = training_set.merge(self.get_review_score(),
+        #                                       on='seller_id')
 
-            
+
 
         return training_set
