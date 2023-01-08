@@ -36,13 +36,14 @@ def preprocess_and_train():
     data = pd.read_csv(data_raw_path, dtype=DTYPES_RAW_OPTIMIZED)
 
     # Clean data using ml_logic.data.clean_data
-    # YOUR CODE HERE
+    data_cleaned = clean_data(data)
 
     # Create X, y
-    # YOUR CODE HERE
+    X = clean_data.drop("fare_amount", axis=1)
+    y = clean_data["fare_amount"]
 
     # Preprocess X using `preprocessor.py`
-    # YOUR CODE HERE
+    X_processed = preprocess_features(X)
 
     # Train model on X_processed and y, using `model.py`
     model = None
@@ -50,7 +51,9 @@ def preprocess_and_train():
     batch_size = 256
     patience = 2
 
-    # YOUR CODE HERE
+    model = initialize_model()
+    model = compile_model(model, learning_rate)
+    model, history = train_model(model, X_processed, y, batch_size=batch_size, patience=patience, validation_split=0.3)
 
     # Compute the validation metric (min val mae of the holdout set)
     metrics = dict(mae=np.min(history.history['val_mae']))
