@@ -1,31 +1,58 @@
+# .env
+
+# # OS generated files #
+# ######################
+# .DS_Store
+# __MACOSX
+# # Jupiter Notebook #
+# .pytest_cache
+# __pycache__
+# *checkpoint.ipynb
+# *.ipynb_checkpoints
+
+# # inteliJ #
+# .idea
+# *.gz
+# *PKG-INFO
+# *.egg-info
+# *.csv
+# 05-ML/**/*.txt
+# 06-Deep-Learning/**/*.txt
+# *.zip
+# mlruns
+# *.sqlite
+# # IDE #
+# *.vscode
+
+# # Specific Challenges
+# 06-Deep-Learning/03-Convolutional-Neural-Networks/04-Transfer-Learning/flowers/
+
+# # Challengify - test challengification files
+# *_challengify*
+
+
 .env
+.env.yaml
+.python-version
 
-# OS generated files #
-######################
+# System files
 .DS_Store
-__MACOSX
-# Jupiter Notebook #
-.pytest_cache
-__pycache__
-*checkpoint.ipynb
-*.ipynb_checkpoints
-
-# inteliJ #
-.idea
-*.gz
-*PKG-INFO
+.ipynb_checkpoints
+*.pyc
+*.swp
+build/
+dist/
+.coverage
+*.iml
 *.egg-info
-*.csv
-05-ML/**/*.txt
-06-Deep-Learning/**/*.txt
-*.zip
-mlruns
-*.sqlite
-# IDE #
 *.vscode
 
-# Specific Challenges
-06-Deep-Learning/03-Convolutional-Neural-Networks/04-Transfer-Learning/flowers/
+# Data files
+*.csv
+*.sqlite
+*.zip
+training_outputs/
 
-# Challengify - test challengification files
-*_challengify*
+*.sublime-project
+*.sublime-workspace
+**/*.code-workspace

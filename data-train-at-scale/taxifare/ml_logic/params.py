@@ -6,8 +6,8 @@ load and validate the environment variables in the `.env`
 import os
 import numpy as np
 
-DATASET_SIZE = "10k"             # ["1k","10k", "100k", "500k"]
-VALIDATION_DATASET_SIZE = "10k"  # ["1k", "10k", "100k", "500k"]
+DATASET_SIZE = "500k"             # ["1k","10k", "100k", "500k"]
+VALIDATION_DATASET_SIZE = "500k"  # ["1k", "10k", "100k", "500k"]
 CHUNK_SIZE = 2000
 LOCAL_DATA_PATH = os.path.join(os.path.expanduser('~'), ".lewagon", "mlops", "data")
 LOCAL_REGISTRY_PATH =  os.path.join(os.path.expanduser('~'), ".lewagon", "mlops", "training_outputs")

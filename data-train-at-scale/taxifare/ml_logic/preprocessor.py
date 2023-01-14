@@ -6,12 +6,13 @@ from taxifare.ml_logic.encoders import (transform_time_features,
                                               transform_lonlat_features,
                                               compute_geohash)
 
+from taxifare.ml_logic.utils import simple_time_and_memory_tracker
 import numpy as np
 import pandas as pd
 
 from colorama import Fore, Style
 
-
+@simple_time_and_memory_tracker
 def preprocess_features(X: pd.DataFrame) -> np.ndarray:
 
     def create_sklearn_preprocessor() -> ColumnTransformer:
@@ -20,6 +21,8 @@ def preprocess_features(X: pd.DataFrame) -> np.ndarray:
         that transforms a cleaned dataset of shape (_, 7)
         into a preprocessed one of different fixed shape (_, 65)
         """
+
+        # $CHA_BEGIN
 
         # PASSENGER PIPE
         p_min = 1
@@ -54,7 +57,7 @@ def preprocess_features(X: pd.DataFrame) -> np.ndarray:
                 )
             )
 
-         # GEOHASH PIPE
+        # GEOHASH PIPE
         lonlat_features = [
             "pickup_latitude", "pickup_longitude", "dropoff_latitude",
             "dropoff_longitude"
@@ -93,7 +96,6 @@ def preprocess_features(X: pd.DataFrame) -> np.ndarray:
 
         # $CHA_END
         return final_preprocessor
-
 
 
     print(Fore.BLUE + "\nPreprocess features..." + Style.RESET_ALL)
