@@ -1,7 +1,5 @@
 """Dummy challenge for Kitt Demo"""
 
-
-
 from signal import raise_signal
 import math
 
