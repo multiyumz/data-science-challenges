@@ -3,7 +3,7 @@
 
 A good data analyst in Python shouldn't only know how to manipulate and visualize data. They should also be able to solve mathematical problems based on this data.
 
-Welcome to [Scipy](https://docs.scipy.org/doc/scipy/reference/tutorial/general.html), a handy complement to `NumPy` for advanced mathematical computations!
+Welcome to [Scipy](https://docs.scipy.org/doc/scipy/tutorial/general.html), a handy complement to `NumPy` for advanced mathematical computations!
 
 SciPy is a must-know library to perform advanced mathematical operations, such as:
 - Complex and differential equations
