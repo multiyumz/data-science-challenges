@@ -150,10 +150,10 @@ class Order:
         matching_geo = matching_geo.dropna()
 
         matching_geo.loc[:, 'distance_seller_customer'] = \
-            matching_geo.apply(lambda row: haversine_distance(row['geolocation_lat_seller'],
-                                                              row['geolocation_lng_seller'],
-                                                              row['geolocation_lat_customer'],
-                                                              row['geolocation_lng_customer']),
+            matching_geo.apply(lambda row: haversine_distance(row['geolocation_lng_seller'],
+                                                              row['geolocation_lat_seller'],
+                                                              row['geolocation_lng_customer'],
+                                                              row['geolocation_lat_customer']),
                                                               axis=1)
 
         # Since an order can have multiple sellers,
