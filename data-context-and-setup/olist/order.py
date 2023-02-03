@@ -20,9 +20,11 @@ class Order:
         and filters out non-delivered orders unless specified
         """
         # Hint: Within this instance method, you have access to the instance of the class Order in the variable self, as well as all its attributes
-        orders = self.data['orders'].copy()
 
         # filter delivered orders only
+
+        orders = self.data['orders'].copy()
+
         if is_delivered:
             orders = orders.query("order_status=='delivered'").copy()
 
@@ -45,9 +47,16 @@ class Order:
         orders.loc[:, 'expected_wait_time'] = \
             (orders['order_estimated_delivery_date'] - orders['order_purchase_timestamp']) / np.timedelta64(24, 'h')
 
-        return orders[[
+        # return orders[[
+        #     'order_id', 'wait_time', 'expected_wait_time', 'delay_vs_expected', 'order_status'
+        #     ]]
+
+        result = orders[[
             'order_id', 'wait_time', 'expected_wait_time', 'delay_vs_expected', 'order_status'
             ]]
+
+        return result
+
 
 
     def get_review_score(self):
@@ -66,6 +75,7 @@ class Order:
         return reviews[[
             "order_id", "dim_is_five_star", "dim_is_one_star", "review_score"
             ]]
+
 
     def get_number_products(self):
         """
