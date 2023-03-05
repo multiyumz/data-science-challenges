@@ -1,68 +1,76 @@
-from taxifare.ml_logic.params import LOCAL_REGISTRY_PATH
-
 import glob
 import os
 import time
 import pickle
-
 from colorama import Fore, Style
-
-from tensorflow.keras import Model, models
-
-
-def save_model(model: Model = None,
-               params: dict = None,
-               metrics: dict = None) -> None:
+from tensorflow import keras
+from taxifare.params import *
+def save_results(params: dict, metrics: dict) -> None:
     """
-    persist trained model, params and metrics
+    Persist params & metrics locally on hard drive at
+    "{LOCAL_REGISTRY_PATH}/params/{current_timestamp}.pickle"
+    "{LOCAL_REGISTRY_PATH}/metrics/{current_timestamp}.pickle"
+    - (unit 03 only) if MODEL_TARGET='mlflow', also persist them on mlflow
+    """
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+
+    # save params locally
+    if params is not None:
+        params_path = os.path.join(LOCAL_REGISTRY_PATH, "params", timestamp + ".pickle")
+        with open(params_path, "wb") as file:
+            pickle.dump(params, file)
+
+    # save metrics locally
+    if metrics is not None:
+        metrics_path = os.path.join(LOCAL_REGISTRY_PATH, "metrics", timestamp + ".pickle")
+        with open(metrics_path, "wb") as file:
+            pickle.dump(metrics, file)
+
+    print("✅ Results saved locally")
+
+
+def save_model(model: keras.Model = None) -> None:
+    """
+    Persist trained model locally on hard drive at f"{LOCAL_REGISTRY_PATH}/models/{timestamp}.h5"
+    - if MODEL_TARGET='gcs', also persist it on your bucket on GCS at "models/{timestamp}.h5" --> unit 02 only
+    - if MODEL_TARGET='mlflow', also persist it on mlflow instead of GCS (for unit 0703 only) --> unit 03 only
     """
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
-    print(Fore.BLUE + "\nSave model to local disk..." + Style.RESET_ALL)
+    # save model locally
+    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.h5")
+    model.save(model_path)
 
-    # save params
-    if params is not None:
-        params_path = os.path.join(LOCAL_REGISTRY_PATH, "params", timestamp + ".pickle")
-        print(f"- params path: {params_path}")
-        with open(params_path, "wb") as file:
-            pickle.dump(params, file)
-
-    # save metrics
-    if metrics is not None:
-        metrics_path = os.path.join(LOCAL_REGISTRY_PATH, "metrics", timestamp + ".pickle")
-        print(f"- metrics path: {metrics_path}")
-        with open(metrics_path, "wb") as file:
-            pickle.dump(metrics, file)
-
-    # save model
-    if model is not None:
-        model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", timestamp)
-        print(f"- model path: {model_path}")
-        model.save(model_path)
-
-    print("\n✅ data saved locally")
+    print("✅ Model saved locally")
 
     return None
 
 
-def load_model(save_copy_locally=False) -> Model:
+def load_model(stage="Production") -> keras.Model:
     """
-    load the latest saved model, return None if no model found
+    Return a saved model:
+    - locally (latest one in alphabetical order)
+    - or from GCS (most recent one) if MODEL_TARGET=='gcs'  --> for unit 02 only
+    - or from MLFLOW (by "stage") if MODEL_TARGET=='mlflow' --> for unit 03 only
+
+    Return None (but do not Raise) if no model found
+
     """
-    print(Fore.BLUE + "\nLoad model from local disk..." + Style.RESET_ALL)
 
-    # get latest model version
-    model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+    if MODEL_TARGET == "local":
+        print(Fore.BLUE + f"\nLoad latest model from local registry..." + Style.RESET_ALL)
+        # Get latest model version name by timestamp on disk
+        local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+        local_model_paths = glob.glob(f"{local_model_directory}/*")
+        if not local_model_paths:
+            return None
 
-    results = glob.glob(f"{model_directory}/*")
-    if not results:
-        return None
+        most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
+        print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
+        lastest_model = keras.models.load_model(most_recent_model_path_on_disk)
+        print("✅ model loaded from local disk")
 
-    model_path = sorted(results)[-1]
-    print(f"- path: {model_path}")
+        return lastest_model
 
-    model = models.load_model(model_path)
-    print("\n✅ model loaded from disk")
 
-    return model

@@ -30,8 +30,8 @@ python --version # First, check your Python version for <YOUR_PYTHON_VERSION> be
 
 ```bash
 pyenv virtualenv <YOUR_PYTHON_VERSION> taxifare-env
-pip install --upgrade pip
 pyenv local taxifare-env
+pip install --upgrade pip
 code .
 ```
 
@@ -44,32 +44,32 @@ In VS code, open any `.py` file and check that `taxifare-env` is activated by cl
 
 ### 1.2) Get familiar with the taxifare package structure
 
-❗️Take 10 minutes to understand the structure of the boilerplate we've prepared for you (don't go into detail); its entry point is `taxifare.interface.main_local`
+❗️Take 10 minutes to understand the structure of the boilerplate we've prepared for you (don't go into detail); its entry point is `taxifare.interface.main_local`: follow it quickly.
 
 ```bash
 . # Challenge folder root
-├── Makefile          # Main "interface" with your project; use it to launch tests, start trainings, etc. from the CLI
+├── Makefile          # 🚪 Your command "launcher". Use it extensively (launch training, tests, etc...)
 ├── README.md         # The file you are reading right now!
 ├── notebooks
 │   └── datascientist_deliverable.ipynb   # The deliverable from the DS team!
-├── pytest.ini         # Test configuration file (please do not touch)
 ├── requirements.txt   # List all third-party packages to add to your local environment
 ├── setup.py           # Enable `pip install` for your package
 ├── taxifare           # The code logic for this package
 │   ├── __init__.py
 │   ├── interface
 │   │   ├── __init__.py
-│   │   └── main_local.py  # Your main Python entry point that contains all the "routes" that will be accessible from outside (a.k.a. the web!)
+│   │   └── main_local.py  # 🚪 Your main Python entry point containing all "routes"
 │   └── ml_logic
-│       ├── __init__.py
-│       ├── data.py           # Save, load and clean data
-│       ├── encoders.py       # Custom encoder utilities
-│       ├── model.py          # TensorFlow model
-│       ├── params.py         # Global project params
-│       ├── preprocessor.py   # Sklearn preprocessing pipelines
-│       ├── registry.py       # Save and load models
-│       └── utils.py          # Useful Python functions that can be shared across the taxifare package
-├── tests  # Tests to run using `make pytest`
+│   |    ├── __init__.py
+│   |    ├── data.py           # Save, load and clean data
+│   |    ├── encoders.py       # Custom encoder utilities
+│   |    ├── model.py          # TensorFlow model
+│   |    ├── preprocessor.py   # Sklearn preprocessing pipelines
+│   |    ├── registry.py       # Save and load models
+|   ├── utils.py    # # Useful python functions with no dependencies on taxifare logic
+|   ├── params.py   # Global project params
+|
+├── tests  # Tests to run using `make test_...`
 │   ├── ...
 │   └── ...
 ├── .gitignore
@@ -85,7 +85,23 @@ pip install -e .
 Make sure the package is installed by running `pip list | grep taxifare`; it should print the absolute path to the package.
 
 
-### 1.3) Let's store all our data locally in `~/.lewagon/mlops/`
+### 1.3) Where is the data?
+
+**Raw data is in Google Big Query**
+
+WagonCab's engineering team stores all it's cab course history since 2009 in a massive Big Query table `wagon-public-datasets.taxifare.raw_all`.
+- This table contains `1.1 Million` for this challenge exactly, from **2009 to jun 2015**.
+- *(Note from Le Wagon: In reality, there is 55M rows but we limited that for cost-control in the whole module)*
+
+**Check access to Google Cloud Platform**
+Your computer should already be configured to have access to Google Cloud Platform since [setup-day](https://github.com/lewagon/data-setup/blob/master/macOS.md#google-cloud-platform-setup)
+
+🧪 Check that everything is fine
+```bash
+make test_gcp_setup
+```
+
+**We'll always cache all intermediate data locally in `~/.lewagon/mlops/` to avoid querying BQ twice**
 
 💾 Let's store our `data` folder *outside* of this challenge folder so that it can be accessed by all other challenges throughout the whole ML Ops module. We don't want it to be tracked by `git` anyway!
 
@@ -125,26 +141,10 @@ tree -a ~/.lewagon/mlops/
     └── params  # Store trained model hyperparameters
 ```
 
-🌐 Now, download the raw datasets
+☝️ Feel free to remove all files but keep this empty folder structure at any time using
 
 ```bash
-# 4 training sets
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_1k.csv > ~/.lewagon/mlops/data/raw/train_1k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_10k.csv > ~/.lewagon/mlops/data/raw/train_10k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_100k.csv > ~/.lewagon/mlops/data/raw/train_100k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_500k.csv > ~/.lewagon/mlops/data/raw/train_500k.csv
-
-# 4 validation sets
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/val_1k.csv > ~/.lewagon/mlops/data/raw/val_1k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/val_10k.csv > ~/.lewagon/mlops/data/raw/val_10k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/val_100k.csv > ~/.lewagon/mlops/data/raw/val_100k.csv
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/val_500k.csv > ~/.lewagon/mlops/data/raw/val_500k.csv
-```
-
-❗️And only if you have an **excellent** internet connection (with 100Mbps it should take about 2min) and 6GBs of free storage on your computer; **not** mandatory
-
-```bash
-curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_50M.csv.zip > ~/.lewagon/mlops/data/raw/train_50M.csv.zip
+make reset_local_files
 ```
 
 </details>
@@ -154,7 +154,7 @@ curl https://storage.googleapis.com/datascience-mlops/taxi-fare-ny/train_50M.csv
 <details>
   <summary markdown='span'><strong>❓Instructions (expand me)</strong></summary>
 
-*⏱ Duration:  spend 1 hour at most on this*
+*⏱ Duration:  spend 1 hour on this*
 
 🖥️ Open `datascientist_deliverable.ipynb` with VS Code (forget about Jupyter for this module), and run all cells carefully, while understanding them. This handover between you and the DS team is the perfect time to interact with them (i.e. your buddy or a TA).
 
@@ -186,32 +186,40 @@ python -m taxifare.interface.main_local
 │   ├── __init__.py
 │   ├── interface
 │   │   ├── __init__.py
-│   │   └── main_local.py   # 🔵💡 Start here: code both `preprocess_and_train` and `pred`
+│   │   └── main_local.py   # 🔵 🚪 Entry point: code both `preprocess_and_train()` and `pred()`
 │   └── ml_logic
 │       ├── __init__.py
-│       ├── data.py          # 🔵 `clean data`
-│       ├── encoders.py      # 🔵 `transform_time_features`, `transform_lonlat_features`, `compute_geohash`
-│       ├── model.py         # 🔵 `initialize_model`, `compile_model`, `train_model`
-│       ├── params.py        # 💡  You can change `DATASET_SIZE`
-│       ├── preprocessor.py  # 🔵 `preprocess_features`
+│       ├── data.py          # 🔵 your code here
+│       ├── encoders.py      # 🔵 your code here
+│       ├── model.py         # 🔵 your code here
+│       ├── preprocessor.py  # 🔵 your code here
 │       ├── registry.py  # ✅ `save_model` and `load_model` are already coded for you
-│       └── utils.py     # ✅ keep for later
+|   ├── params.py # 🔵 You need to fill your GCP_PROJECT
+│   ├── utils.py
 ```
 
 **🧪 Test your code**
 
-❗️First, make sure your package runs properly with `python -m taxifare.interface.main_local`.
+Make sure you have the package installed correctly in your current taxifare-env, if not
+
+```bash
+pip list | grep taxifare
+```
+
+Then, make sure your package runs properly with `python -m taxifare.interface.main_local`.
 - Debug it until it runs!
 - Use the following dataset sizes
 
 ```python
 # taxifare/ml_logic/params.py
-DATASET_SIZE = '1k'   # To iterate faster in debug mode 🐞
-DATASET_SIZE = '100k' # Should work at least once
+DATA_SIZE = '1k'   # To iterate faster in debug mode 🐞
+DATA_SIZE = '200k' # Should work at least once
+# DATA_SIZE = 'all' 🚨 DON'T TRY YET, it's too big and will cost money!
 ```
 
-❗️Then, only try to pass tests with `make test_train_at_scale_3`!
+Then, only try to pass tests with `make test_preprocess_and_train`!
 
+✅ When you are all green, track your results on kitt with `make test_kitt`
 
 </details>
 
@@ -224,15 +232,9 @@ DATASET_SIZE = '100k' # Should work at least once
 
 Now that you've managed to make the package work for a small dataset, time to see how it will handle the real dataset!
 
-👉 Change `ml_logic.params.DATASET_SIZE` and `ml_logic.params.VALIDATION_DATASET_SIZE` to `'500k'` to start getting serious!
+👉 Change `ml_logic.params.DATA_SIZE` to `all` to start getting serious!
 
-🕵️ Investigate which part of your code takes **the most time** and uses **the most memory**, and try to answer the following questions with your buddy:
-- What part of your code holds the key bottlenecks?
-- What kinds of bottlenecks are the most worrying? (time, memory, etc.)
-- Do you think it will scale to 50M rows?
-- Can you think about potential solutions? Write down your ideas, but do not implement them yet!
-
-💡 **Hint:** Use `ml_logic.utils.simple_time_and_memory_tracker` to decorate the methods of your choice as seen below
+🕵️ Investigate which part of your code takes **the most time** and uses **the most memory**  using `ml_logic.utils.simple_time_and_memory_tracker` to decorate the methods of your choice.
 
 ```python
 # taxifare.ml_logic.data.py
@@ -243,8 +245,13 @@ def clean_data() -> pd.DataFrame:
     ...
 ```
 
-**Optional:** if you don't remember exactly how decorators work, refer to our [04/05-Communicate](https://kitt.lewagon.com/camps/<user.batch_slug>/lectures/content/04-Decision-Science_05-Communicate.slides.html?title=Communicate#/6/3) lecture!
+💡 If you don't remember exactly how decorators work, refer to our [04/05-Communicate](https://kitt.lewagon.com/camps/<user.batch_slug>/lectures/content/04-Decision-Science_05-Communicate.slides.html?title=Communicate#/6/3) lecture!
 
+🕵️ Try to answer the following questions with your buddy:
+- What part of your code holds the key bottlenecks ?
+- What kinds of bottlenecks are the most worrying? (time? memory?)
+- Do you think it will scale if we had given you the 50M rows ? 500M ? By the way, the [real NYC dataset](https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page) is even bigger and weights in at about 156GB!
+- Can you think about potential solutions? Write down your ideas, but do not implement them yet!
 </details>
 
 
@@ -253,50 +260,43 @@ def clean_data() -> pd.DataFrame:
 <details>
   <summary markdown='span'><strong>❓Instructions (expand me)</strong></summary>
 
-🎯 Your goal is to improve your codebase to be able to train the model on **50M+ rows**, **without** RAM limits.
+🎯 Your goal is to improve your codebase to be able to train the model on unlimited amount of rows, **without reaching RAM limits**, on a single computer.
 
-### 5.1) Discussion
+## 5.1) Discussion
 
 **What did we learn?**
 
-In the previous challenge we saw that we have memory and time constraints:
-- The `(55M, 8)`-shaped `raw_data` gets loaded into memory as a DataFrame and takes up about 12GB of RAM, which is too much for most computers
-- The `(55M, 65)`-shaped preprocessed DataFrame is even bigger
-- The `ml_logic.encoders.compute_geohash` method takes a long time to process 🤯
+We have memory and time constraints:
+- A `(55M, 8)`-shaped raw data gets loaded into memory as a DataFrame and takes up about 10GB of RAM, which is too much for most computers.
+- A `(55M, 65)`-shaped preprocessed DataFrame is even bigger.
+- The `ml_logic.encoders.compute_geohash` method takes a very long time to process 🤯
 
-**What could we do?**
+One solution is to pay for a *cloud Virtual Machine (VM)* with enough RAM and process it there (this is often the simplest way to deal with such a problem).
 
-1. One solution is to pay for a **cloud Virtual Machine (VM)** with enough RAM and process it there (this is often the simplest way to deal with such a problem)
-2. Another could be to load each column of the `raw_data` individually and perform some preprocessing on it, **column by column**
+**Proposed solution: incremental preprocessing 🔪 chunk by chunk 🔪**
 
-```python
-for col in column_names:
-    df_col = pd.read_csv("raw_data.csv", usecols=col)
-    # Preprocess a single column here
-```
+<img src="https://wagon-public-datasets.s3.amazonaws.com/data-science-images/07-ML-OPS/process_by_chunk.png" width=500>
 
-You may encounter datasets, however, whose individual columns are too big to load anyway! By the way, the [real NYC dataset](https://www1.nyc.gov/site/tlc/about/tlc-trip-record-data.page) is even bigger than 55M rows and weighs in at about 156GB!
+💡 As our preprocessor is *stateless*, we can easily:
+- Avoid computing any _column-wise statistics_ but only perform _row-by-row preprocessing_
+- Decouple the _preprocessing_ from the _training_ and store any intermediate results on disk!
 
-**Proposed solution**: incremental preprocessing, 🔪 chunk by chunk 🔪
+🙏 Therefore, let's do the preprocessing *chunk by chunk*, with chunks of limited size (e.g. 100.000 rows), each chunk fitting nicely in memory:
 
-Did you notice that our preprocessing is **stateless**?
-- We don't need to store (_fit_) any information about columns of the train set, such as _standard deviation_, to apply it (_transform_) on the test set.
-- We can therefore decouple the _preprocessing_ from the _training_ instead of grouping everything into a `preprocess_and_train` pipeline.
-  - We will `preprocess` and store `data_processed` on our hard drive for good, then we will `train` our model on `data_processed` later on.
-  - When new data arrives, we'll simply apply the preprocessing to it as a pure python function.
+1. We'll store `data_processed_chunk_01` on a hard-drive.
+2. Then append `data_processed_chunk_02` to the first.
+3. etc...
+4. Until a massive CSV is stored at `~/.lewagon/mlops/data/processed/processed_all.csv`
 
-Secondly, as we do not need to compute _column-wise statistics_ but only perform _row-by-row preprocessing_, we can do the preprocessing **chunk by chunk**, with chunks of limited size (e.g. 100.000 rows), each chunk fitting nicely in memory! And then simply append each _preprocessed chunk_ to the end of a CSV on our local disk. It won't make it faster but at least it will compute without crashing, and you only need to do it once.
+5. In section 6️⃣, we'll `train()` our model chunk-by-chunk too by loading & training iteratively on each chunk (more on that next section)
 
-<img src="https://wagon-public-datasets.s3.amazonaws.com/data-science-images/07-ML-OPS/process_by_chunk.png">
-
-### 5.2) Your turn
+## 5.2) Your turn: code `def preprocess()`
 
 👶 **First, let's bring back smaller dataset sizes for debugging purposes**
 
 ```python
 # params.py
-DATASET_SIZE = '1k'
-VALIDATION_DATASET_SIZE = '1k'
+DATA_SIZE = '1k'
 CHUNK_SIZE = 200
 ```
 
@@ -310,63 +310,68 @@ CHUNK_SIZE = 200
   <summary markdown='span'>👇 Code to copy 👇</summary>
 
 ```python
-def preprocess(source_type='train'):
+def preprocess(min_date: str = '2009-01-01', max_date: str = '2015-01-01') -> None:
     """
-    Preprocess the dataset iteratively by loading data in chunks that fit in memory,
-    processing each chunk, appending each of them to a final dataset, and saving
-    the final preprocessed dataset as a CSV file
+    Query and preprocess the raw dataset iteratively (by chunks).
+    Then store the newly processed (and raw) data on local hard-drive for later re-use.
+
+    - If raw data already exists on local disk:
+        - use `pd.read_csv(..., chunksize=CHUNK_SIZE)`
+
+    - If raw data does not yet exists:
+        - use `bigquery.Client().query().result().to_dataframe_iterable()`
+
     """
+    print(Fore.MAGENTA + "\n ⭐️ Use case: preprocess by batch" + Style.RESET_ALL)
 
-    print("\n⭐️ Use case: preprocess")
+    from taxifare.ml_logic.data import clean_data
+    from taxifare.ml_logic.preprocessor import preprocess_features
 
-    # Local saving paths given to you (do not overwrite these data_path variables)
-    source_name = f"{source_type}_{DATASET_SIZE}.csv"
-    destination_name = f"{source_type}_processed_{DATASET_SIZE}.csv"
+    min_date = parse(min_date).strftime('%Y-%m-%d') # e.g '2009-01-01'
+    max_date = parse(max_date).strftime('%Y-%m-%d') # e.g '2009-01-01'
 
-    data_raw_path = os.path.abspath(os.path.join(LOCAL_DATA_PATH, "raw", source_name))
-    data_processed_path = os.path.abspath(os.path.join(LOCAL_DATA_PATH, "processed", destination_name))
+    query = f"""
+        SELECT {",".join(COLUMN_NAMES_RAW)}
+        FROM {GCP_PROJECT_WAGON}.{BQ_DATASET}.raw_{DATA_SIZE}
+        WHERE pickup_datetime BETWEEN '{min_date}' AND '{max_date}'
+        ORDER BY pickup_datetime
+        """
+    # Retrieve `query` data as dataframe iterable
+    data_query_cache_path = Path(LOCAL_DATA_PATH).joinpath("raw", f"query_{min_date}_{max_date}_{DATA_SIZE}.csv")
+    data_processed_path = Path(LOCAL_DATA_PATH).joinpath("processed", f"processed_{min_date}_{max_date}_{DATA_SIZE}.csv")
 
-    # Iterate over the dataset, in chunks
-    chunk_id = 0
+    data_query_cache_exists = data_query_cache_path.is_file()
+    if data_query_cache_exists:
+        print("Get a dataframe iterable from local CSV...")
+        chunks = None
+        # YOUR CODE HERE
 
-    # Let's loop until we reach the end of the dataset, then `break` out
-    while (True):
-        print(f"processing chunk n°{chunk_id}...")
+    else:
+        print("Get a dataframe iterable from Querying Big Query server...")
+        chunks = None
+        # 🎯 Hints: `bigquery.Client(...).query(...).result(page_size=...).to_dataframe_iterable()`
+        # YOUR CODE HERE
 
-        try:
-            # Load the chunk numbered `chunk_id` of size `CHUNK_SIZE` into memory
-            # 🎯 Hint: check out pd.read_csv(skiprows=..., nrows=..., headers=...)
-            # We advise you to always load data with `header=None`, and add back column names using COLUMN_NAMES_RAW
-            # 👉 YOUR CODE HERE
+    for chunk_id, chunk in enumerate(chunks):
+        print(f"processing chunk {chunk_id}...")
 
-        except pd.errors.EmptyDataError:
-            # 🎯 Hint: what would you do when you reach the end of the CSV?
-            # 👉 YOUR CODE HERE
+        # Clean chunk
+        # YOUR CODE HERE
 
+        # Create chunk_processed
+        # 🎯 Hints: Create (`X_chunk`, `y_chunk`), process only `X_processed_chunk`, then concatenate (X_processed_chunk, y_chunk)
+        # YOUR CODE HERE
 
-        # Clean chunk; pay attention, sometimes it can result in 0 rows remaining!
-        # 👉 YOUR CODE HERE
+        # Save and append the processed chunk to a local CSV at "data_processed_path"
+        # 🎯 Hints: df.to_csv(mode=...)
+        # 🎯 Hints: We want a CSV without index nor headers (they'd be meaningless)
+        # YOUR CODE HERE
 
-        # Create X_chunk, y_chunk
-        # 👉 YOUR CODE HERE
+        # Save and append the raw chunk if not `data_query_cache_exists`
+        # YOUR CODE HERE
+    print(f"✅ data query saved as {data_query_cache_path}")
+    print("✅ preprocess() done")
 
-        # Create X_processed_chunk and concatenate (X_processed_chunk, y_chunk) into data_processed_chunk
-        # 👉 YOUR CODE HERE
-
-        # Save and append the chunk of the preprocessed dataset to a local CSV file
-        # Keep headers on the first chunk: for convention, we'll always save CSVs with headers in this challenge
-        # 🎯 Hints: check out pd.to_csv(mode=...)
-
-        # 👉 YOUR CODE HERE
-
-        chunk_id += 1
-
-    # 🧪 Write outputs so that they can be tested by make test_train_at_scale (do not remove)
-    data_processed = pd.read_csv(data_processed_path, header=None, skiprows=1, dtype=DTYPES_PROCESSED_OPTIMIZED).to_numpy()
-    write_result(name="test_preprocess", subdir="train_at_scale", data_processed_head=data_processed[0:10])
-
-
-    print("✅ data processed saved entirely")
 
 ```
 
@@ -377,13 +382,14 @@ def preprocess(source_type='train'):
 **❓Try to create and store the following preprocessed datasets**
 
 - `data/processed/train_processed_1k.csv` by running `preprocess()`
-- `data/processed/val_processed_1k.csv` by running `preprocess(source_type='val')`
 
 <br>
 
 **🧪 Test your code**
 
-Test your code with `make test_train_at_scale_5`.
+Test your code with `make test_preprocess_by_chunk`.
+
+✅ When you are all green, track your results on kitt with `make test_kitt`
 
 <br>
 
@@ -392,15 +398,11 @@ Test your code with `make test_train_at_scale_5`.
 Using:
 ```python
 # params.py
-DATASET_SIZE = '500k'
-VALIDATION_DATASET_SIZE = '500k'
+DATA_SIZE = 'all'
 CHUNK_SIZE = 100000
 ```
-To create:
-- `data/processed/train_processed_500k.csv` by running `preprocess()`
-- `data/processed/val_processed_500k.csv` by running `preprocess(source_type='val')`
 
-🎉 Given a few hours of computation, we could easily process the 55 Million rows too, but let's not do it today!
+🎉 Given a few hours of computation, we could easily process the 55 Million rows too, but let's not do it today 😅
 
 </details>
 
@@ -411,11 +413,11 @@ To create:
 
 <br>
 
-🎯 Goal: train our model on the full `data_processed.csv`
+🎯 Goal: train our model on the full `.../processed/processed_all.csv`
 
-### 6.1) Discussion
+## 6.1) Discussion
 
-We cannot load such a big dataset of shape `(55M, 65)` into RAM all at once, but we can load it in chunks.
+In theory, we cannot load such a big dataset of shape `(xxMillions, 65)` into RAM all at once, but we can load it in chunks.
 
 **How do we train a model in chunks?**
 
@@ -451,16 +453,16 @@ Granted, thanks to TensorFlow datasets you will not always need "chunks" as you 
 ```python
 import tensorflow as tf
 
-ds = tf.data.experimental.make_csv_dataset(data_processed_55M.csv, batch_size=256)
+ds = tf.data.experimental.make_csv_dataset(data_processed_all.csv, batch_size=256)
 model.fit(ds)
 ```
 
-Still, in this challenge, we would like to teach you the universal method of incrementally fitting in chunks, as it applies to any framework, and will prove useful to *partially retrain* your model with newer data once it is put in production.
+We will see that in Recap. Still, in this challenge, we would like to teach you the universal method of incrementally fitting in chunks, as it applies to any framework, and will prove useful to *partially retrain* your model with newer data once it is put in production.
 </details>
 
 <br>
 
-### 6.2) Your turn
+## 6.2) Your turn - code `def train()`
 
 **Try to code the new route given below by `def train()` in your `ml_logic.interface.main_local` module; copy and paste the code below to get started**
 
@@ -472,94 +474,104 @@ Again, start with a very small dataset size, then finally train your model on 50
   <summary markdown='span'><strong>👇 Code to copy 👇</strong></summary>
 
 ```python
-def train():
+def train(min_date:str = '2009-01-01', max_date:str = '2015-01-01') -> None:
     """
-    Training on the full (already preprocessed) dataset, by loading it
-    chunk-by-chunk, and updating the weight of the model for each chunks.
-    Save model, compute validation metrics on a holdout validation set that is
-    common to all chunks.
+    Incremental train on the (already preprocessed) dataset locally stored.
+    - Loading data chunk-by-chunk
+    - Updating the weight of the model for each chunk
+    - Saving validation metrics at each chunks, and final model weights on local disk
     """
-    print("\n ⭐️ use case: train")
 
-    # Validation Set: Load a validation set common to all chunks and create X_val, y_val
-    data_val_processed_path = os.path.abspath(os.path.join(
-        LOCAL_DATA_PATH, "processed", f"val_processed_{VALIDATION_DATASET_SIZE}.csv"))
+    print(Fore.MAGENTA + "\n ⭐️ Use case:train by batch" + Style.RESET_ALL)
+    from taxifare.ml_logic.registry import save_model, save_results
+    from taxifare.ml_logic.model import (compile_model, initialize_model, train_model)
 
-    data_val_processed = pd.read_csv(
-        data_val_processed_path,
-        skiprows= 1, # skip header
-        header=None,
-        dtype=DTYPES_PROCESSED_OPTIMIZED
-        ).to_numpy()
-
-    X_val = data_val_processed[:, :-1]
-    y_val = data_val_processed[:, -1]
-
-    # Iterate on the full training dataset chunk per chunks.
-    # Break out of the loop if you receive no more data to train upon!
+    data_processed_path = Path(LOCAL_DATA_PATH).joinpath("processed", f"processed_{min_date}_{max_date}_{DATA_SIZE}.csv")
     model = None
-    chunk_id = 0
-    metrics_val_list = []  # store each metrics_val_chunk
+    metrics_val_list = []  # store each val_mae of each chunk
 
-    while (True):
-        print(f"loading and training on preprocessed chunk n°{chunk_id}...")
+    # Iterate in chunks and partial fit on each chunk
+    chunks = pd.read_csv(data_processed_path,
+                         chunksize=CHUNK_SIZE,
+                         header=None,
+                         dtype=DTYPES_PROCESSED)
 
-        # Load chunk of preprocess data and create (X_train_chunk, y_train_chunk)
-        path = os.path.abspath(os.path.join(
-            LOCAL_DATA_PATH, "processed", f"train_processed_{DATASET_SIZE}.csv"))
-
-        try:
-            data_processed_chunk = pd.read_csv(
-                    path,
-                    skiprows=(chunk_id * CHUNK_SIZE) + 1, # skip header
-                    header=None,
-                    nrows=CHUNK_SIZE,
-                    dtype=DTYPES_PROCESSED_OPTIMIZED,
-                    ).to_numpy()
-
-        except pd.errors.EmptyDataError:
-            data_processed_chunk = None  # end of data
-
-        # Break out of while loop if we have no data to train upon
-        if data_processed_chunk is None:
-            break
-
-        X_train_chunk = data_processed_chunk[:, :-1]
-        y_train_chunk = data_processed_chunk[:, -1]
-
-        learning_rate = 0.001
+    for chunk_id, chunk in enumerate(chunks):
+        print(f"training on preprocessed chunk n°{chunk_id}")
+        # You can adjust training params for each chunk if you want!
+        learning_rate = 0.0005
         batch_size = 256
-        patience = 2
+        patience=2
+        split_ratio = 0.1 # Higher train/val split ratio when chunks are small! Feel free to adjust.
+
+        # Create (X_train_chunk, y_train_chunk, X_val_chunk, y_val_chunk)
+        train_length = int(len(chunk)*(1-split_ratio))
+        chunk_train = chunk.iloc[:train_length, :].sample(frac=1).to_numpy()
+        chunk_val = chunk.iloc[train_length:, :].sample(frac=1).to_numpy()
+
+        X_train_chunk = chunk_train[:, :-1]
+        y_train_chunk = chunk_train[:, -1]
+        X_val_chunk = chunk_val[:, :-1]
+        y_val_chunk = chunk_val[:, -1]
 
         # Train a model *incrementally*, and store the val MAE of each chunk in `metrics_val_list`
-        # 👉 YOUR CODE HERE
+        # YOUR CODE HERE
 
-        chunk_id += 1
-
-    # return the last value of the validation MAE
+    # Return the last value of the validation MAE
     val_mae = metrics_val_list[-1]
 
     # Save model and training params
     params = dict(
         learning_rate=learning_rate,
         batch_size=batch_size,
-        patience = patience,
+        patience=patience,
         incremental=True,
-        chunk_size=CHUNK_SIZE)
+        chunk_size=CHUNK_SIZE
+    )
 
-    print(f"\n✅ trained with MAE: {round(val_mae, 2)}")
+    print(f"✅ Trained with MAE: {round(val_mae, 2)}")
 
-    save_model(model, params=params, metrics=dict(mae=val_mae))
+     # Save results & model
+    save_results(params=params, metrics=dict(mae=val_mae))
+    save_model(model=model)
 
-    print("✅ model trained and saved")
+    print("✅ train() done")
+
+def pred(X_pred: pd.DataFrame = None) -> np.ndarray:
+
+    print(Fore.MAGENTA + "\n ⭐️ Use case: pred" + Style.RESET_ALL)
+
+    from taxifare.ml_logic.registry import load_model
+    from taxifare.ml_logic.preprocessor import preprocess_features
+
+    if X_pred is None:
+       X_pred = pd.DataFrame(dict(
+           pickup_datetime=[pd.Timestamp("2013-07-06 17:18:00", tz='UTC')],
+           pickup_longitude=[-73.950655],
+           pickup_latitude=[40.783282],
+           dropoff_longitude=[-73.984365],
+           dropoff_latitude=[40.769802],
+           passenger_count=[1],
+       ))
+
+    model = load_model()
+    X_processed = preprocess_features(X_pred)
+    y_pred = model.predict(X_processed)
+
+    print(f"✅ pred() done")
+    return y_pred
+
 ```
 
 </details>
 
-**🧪 Test your code with `make test_train_at_scale_6`**
+**🧪 Test your code**
 
-You should get an MAE below 3 on the validation set!
+Check it out with `make test_train_by_chunk`
+
+✅ When you are all green, track your results on kitt with `make test_kitt`
 
 🏁 🏁 🏁 🏁 Congratulations! 🏁 🏁 🏁 🏁
+
 
 </details>
