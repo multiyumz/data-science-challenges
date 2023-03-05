@@ -12,13 +12,23 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     - removing buggy or irrelevant transactions
     """
     # Compress raw_data by setting types to DTYPES_RAW
-    # YOUR CODE HERE
+    df = df.astype(DTYPES_RAW)
 
     # remove buggy transactions
-    # YOUR CODE HERE
+    df = df.drop_duplicates()
+    df = df.dropna(how='any', axis=0)
+    df = df[(df.dropoff_latitude != 0) | (df.dropoff_longitude != 0) |
+            (df.pickup_latitude != 0) | (df.pickup_longitude != 0)]
+    df = df[df.passenger_count > 0]
+    df = df[df.fare_amount > 0]
 
     # Remove geographically irrelevant transactions (rows)
-    # YOUR CODE HERE
+    df = df[df.fare_amount < 400]
+    df = df[df.passenger_count < 8]
+    df = df[df["pickup_latitude"].between(left=40.5, right=40.9)]
+    df = df[df["dropoff_latitude"].between(left=40.5, right=40.9)]
+    df = df[df["pickup_longitude"].between(left=-74.3, right=-73.7)]
+    df = df[df["dropoff_longitude"].between(left=-74.3, right=-73.7)]
 
     print("✅ data cleaned")
 

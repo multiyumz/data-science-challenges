@@ -52,16 +52,23 @@ def preprocess_and_train(min_date:str = '2009-01-01', max_date:str = '2015-01-01
         data.to_csv(data_query_cache_path, header=True, index=False)
 
     # Clean data using data.py
-    # YOUR CODE HERE
+    data = clean_data(data)
 
     # Create (X_train, y_train, X_val, y_val) without data leaks
     # No need for test sets, we'll report val metrics only
     split_ratio = 0.02 # About one month of validation data
-    # YOUR CODE HERE
+    train_length = int(len(data) * (1-split_ratio))
+    data_train = data.iloc[:train_length, :].sample(frac=1)
+    data_val = data.iloc[train_length:, :].sample(frac=1)
+    X_train = data_train.drop("fair_amout", axis=1)
+    y_train = data_train[['fair_amount']]
+    X_val = data_val.drop("fair_amount", axis=1)
+    y_val = data_val[['fair_amount']]
 
     # Create (X_train_processed, X_val_processed) using `preprocessor.py`
     # Luckily, our preprocessor is stateless: We can "fit_transform" both X_train and X_val without data-leaks!
-    # YOUR CODE HERE
+    X_train_processed = preprocess_features(X_train)
+    X_val_preprocessed = preprocess_features(X_val)
 
     # Train model on training set, using `model.py`
     model = None
@@ -69,7 +76,8 @@ def preprocess_and_train(min_date:str = '2009-01-01', max_date:str = '2015-01-01
     batch_size = 256
     patience = 2
 
-    # YOUR CODE HERE
+    
+
 
     # Compute the validation metric (min val mae of the holdout set)
     val_mae = np.min(history.history['val_mae'])
