@@ -134,7 +134,7 @@ def preprocess(min_date: str = '2009-01-01', max_date: str = '2015-01-01') -> No
     if data_query_cache_exists:
         print("Get a dataframe iterable from local CSV...")
         chunks = None
-        chunks = pd.read_csv(data_query_cache_exists, chunksize=CHUNK_SIZE, parse_dates=["pickup_datetime"])
+        chunks = pd.read_csv(data_query_cache_path, chunksize=CHUNK_SIZE, parse_dates=["pickup_datetime"])
 
     else:
         print("Get a dataframe iterable from Querying Big Query server...")
@@ -175,6 +175,87 @@ def preprocess(min_date: str = '2009-01-01', max_date: str = '2015-01-01') -> No
 
     print(f"✅ data query saved as {data_query_cache_path}")
     print("✅ preprocess() done")
+
+
+def train(min_date:str = '2009-01-01', max_date:str = '2015-01-01') -> None:
+    """
+    Incremental train on the (already preprocessed) dataset locally stored.
+    - Loading data chunk-by-chunk
+    - Updating the weight of the model for each chunk
+    - Saving validation metrics at each chunks, and final model weights on local disk
+    """
+
+    print(Fore.MAGENTA + "\n ⭐️ Use case:train by batch" + Style.RESET_ALL)
+    from taxifare.ml_logic.registry import save_model, save_results
+    from taxifare.ml_logic.model import (compile_model, initialize_model, train_model)
+
+    data_processed_path = Path(LOCAL_DATA_PATH).joinpath("processed", f"processed_{min_date}_{max_date}_{DATA_SIZE}.csv")
+    model = None
+    metrics_val_list = []  # store each val_mae of each chunk
+
+    # Iterate in chunks and partial fit on each chunk
+    chunks = pd.read_csv(data_processed_path,
+                         chunksize=CHUNK_SIZE,
+                         header=None,
+                         dtype=DTYPES_PROCESSED)
+
+    for chunk_id, chunk in enumerate(chunks):
+        print(f"training on preprocessed chunk n°{chunk_id}")
+        # You can adjust training params for each chunk if you want!
+        learning_rate = 0.0005
+        batch_size = 256
+        patience=2
+        split_ratio = 0.1 # Higher train/val split ratio when chunks are small! Feel free to adjust.
+
+        # Create (X_train_chunk, y_train_chunk, X_val_chunk, y_val_chunk)
+        train_length = int(len(chunk)*(1-split_ratio))
+        chunk_train = chunk.iloc[:train_length, :].sample(frac=1).to_numpy()
+        chunk_val = chunk.iloc[train_length:, :].sample(frac=1).to_numpy()
+
+        X_train_chunk = chunk_train[:, :-1]
+        y_train_chunk = chunk_train[:, -1]
+        X_val_chunk = chunk_val[:, :-1]
+        y_val_chunk = chunk_val[:, -1]
+
+        # Train a model *incrementally*, and store the val MAE of each chunk in `metrics_val_list`
+        if model is None:
+            model = initialize_model(input_shape=X_train_chunk.shape[1:])
+
+        model = compile_model(model, learning_rate)
+
+        model, history = train_model(
+            model,
+            X_train_chunk,
+            y_train_chunk,
+            batch_size=batch_size,
+            patience=patience,
+            validation_data=(X_val_chunk, y_val_chunk)
+        )
+
+        metrics_val_chunk = np.min(history.history['val_mae'])
+        metrics_val_list.append(metrics_val_chunk)
+
+        print(metrics_val_chunk)
+
+    # Return the last value of the validation MAE
+    val_mae = metrics_val_list[-1]
+
+    # Save model and training params
+    params = dict(
+        learning_rate=learning_rate,
+        batch_size=batch_size,
+        patience=patience,
+        incremental=True,
+        chunk_size=CHUNK_SIZE
+    )
+
+    print(f"✅ Trained with MAE: {round(val_mae, 2)}")
+
+     # Save results & model
+    save_results(params=params, metrics=dict(mae=val_mae))
+    save_model(model=model)
+
+    print("✅ train() done")
 
 
 def pred(X_pred: pd.DataFrame = None) -> np.ndarray:
