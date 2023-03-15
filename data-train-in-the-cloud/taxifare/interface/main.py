@@ -6,7 +6,7 @@ from dateutil.parser import parse
 from taxifare.params import *
 
 def preprocess(min_date:str = '2009-01-01', max_date:str = '2015-01-01') -> None:
-    """
+    """DATA_SIZE
     - Query the raw dataset from Le Wagon BQ
     - Cache query result as local CSV if not exist locally
     - Process query data
