@@ -97,15 +97,15 @@ For this exercise we will work in a Notebook.
 jupyter notebook
 ```
 
-Go ahead and open the `stocks.ipynb` Python Notebook in the ~/code/<user.github_nickname>/{{local_path_to("02-Data-Toolkit/02-Data-Sourcing/01-Stock-Market-API")}} folder.
+Go ahead and **create** a new Python Notebook named `stocks.ipynb` in the ~/code/<user.github_nickname>/{{local_path_to("02-Data-Toolkit/02-Data-Sourcing/01-Stock-Market-API")}} folder.
 
 Start with the usual imports in the first cell:
 
 ```python
-%matplotlib inline
 import numpy as np
 import pandas as pd
-import matplotlib
+import matplotlib.pyplot as plt
+%matplotlib inline
 ```
 
 We will reuse the **API URL** for the **last 3 months of Apple stock prices** here.<br>
@@ -206,7 +206,7 @@ Let's find out what kind of data we can get from this API 🕵️‍♂️
 ### What is the URL for the:
 
 1. Amazon stock prices since last year?
-2. Facebook market cap?
+2. Meta (Facebook) market cap?
 3. Apple research and development spendings quarterly?
 4. Most recent news about Tesla?
 5. Performance of the 'Energy' sector?
@@ -215,7 +215,7 @@ Let's find out what kind of data we can get from this API 🕵️‍♂️
 </summary>
 <ol>
     <li><code>https://iex.lewagon.com/stable/stock/amzn/chart/1y</code></li>
-    <li><code>https://iex.lewagon.com/stable/stock/fb/stats</code></li>
+    <li><code>https://iex.lewagon.com/stable/stock/meta/stats</code></li>
     <li><code>https://iex.lewagon.com/stable/stock/aapl/financials</code></li>
     <li><code>https://iex.lewagon.com/stable/stock/tsla/news/last/1</code></li>
     <li><code>https://iex.lewagon.com/stable/stock/market/sector-performance</code></li>
@@ -228,6 +228,6 @@ Let's find out what kind of data we can get from this API 🕵️‍♂️
 
 ## (Optional) Plotting  _multiple_  line charts
 
-We'd like to **compare** the evolution of the GAFA stocks (Google, Apple, Facebook, Amazon) by plotting them on the _same_ chart.
+We'd like to **compare** the evolution of the GAFA stocks (Google, Apple, Meta, Amazon) by plotting them on the _same_ chart.
 Reuse the code from above to build a dataframe with one column per stock and keeping the dates as the index.
 Maybe you can use some normalization technique at `t = 0` to better compare the relative performance of each stock!

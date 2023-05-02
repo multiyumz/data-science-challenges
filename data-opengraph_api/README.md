@@ -31,7 +31,7 @@ Use `curl` or your browser to perform a few requests and have a look at the JSON
 
 ## Python File
 
-Open the `opengraph.py` file in VS Code. You will find an empty `fetch_metadata` function that you need to implement. This function takes a `url` parameter and, using the [`requests`](https://requests.readthedocs.io/en/master/) package, will retrieve Open Graph metadata of the specified url + return them as a dictionary. If for some reason the API returns an error (`422` or `500`, not `200` for the HTTP status code), then the function should return `None`.
+Open the `opengraph.py` file in VS Code. You will find an empty `fetch_metadata` function that you need to implement. This function takes a `url` parameter and, using the [`requests`](https://requests.readthedocs.io/en/master/) package, will retrieve Open Graph metadata of the specified url + return them as a dictionary. If for some reason the API returns an error (`422` or `500`, not `200` for the HTTP status code), then the function should return an empty `dict`.
 
 This function implementation is about 4 lines of Python, please _make a ticket_ if you are stuck at this step. You'll know you're done with this file when `make` passes the first 3 tests, don't hesitate to commit that checkpoint!
 

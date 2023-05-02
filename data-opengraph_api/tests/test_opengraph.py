@@ -8,10 +8,18 @@ class TestOpenGraph(unittest.TestCase):
         data = fetch_metadata("https://www.github.com")
         self.assertRegex(data["title"], r'(?i)github')
 
-    def test_a_com(self):
+    def test_wrong_url_returns_dict(self):
         data = fetch_metadata("https://www.a.com") # Does not exist
-        self.assertTrue(data is None or data == "")
+        self.assertIsInstance(data, dict)
 
-    def test_empty_url(self):
+    def test_wrong_url_returns_empty_dict(self):
+        data = fetch_metadata("https://www.a.com")  # Does not exist
+        self.assertEqual(data, {})
+
+    def test_empty_url_returns_dict(self):
         data = fetch_metadata("")
-        self.assertTrue(data is None or data == "")
+        self.assertIsInstance(data, dict)
+
+    def test_empty_url_returns_empty_dict(self):
+        data = fetch_metadata("")
+        self.assertEqual(data, {})
