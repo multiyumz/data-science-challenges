@@ -17,7 +17,7 @@ default:
 
 test_kitt:
 	@echo "\n 🧪 computing and saving your progress at 'tests/train_at_scale/test_output.txt'...(this can take a while)"
-	@pytest tests/train_at_scale -c "./tests/pytest_kitt.ini" 2>&1 > tests/train_at_scale/test_output.txt
+	@pytest tests/train_at_scale -c "./tests/pytest_kitt.ini" 2>&1 > tests/train_at_scale/test_output.txt || true
 	@echo "\n 🙏 Please: \n git add tests \n git commit -m 'checkpoint' \n ggpush"
 
 test_preprocess_and_train:

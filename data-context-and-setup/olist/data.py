@@ -15,6 +15,7 @@ class Olist:
             # Make extensive use of `breakpoint()` to investigate what `__file__` variable is really
         # Hint 2: Use os.path library to construct path independent of Mac vs. Unix vs. Windows specificities
 
+        # import ipdb; ipdb.set_trace()
         root_dir = os.path.dirname(os.path.dirname(__file__))
         csv_path = os.path.join(root_dir, "data", "csv")
 

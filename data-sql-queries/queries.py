@@ -29,8 +29,9 @@ def late_released_movies(db):
             JOIN directors on movies.director_id = directors.id
             WHERE (movies.start_year - directors.death_year) > 0
             """
-    db.execute(query)
-    latest = db.fetchall()
+    # db.execute(query)
+    # latest = db.fetchall()
+    latest = db.execute(query).fetchall()
     return [late[0] for late in latest]
 
 
@@ -51,6 +52,7 @@ def stats_on(db, genre_name):
     #     'number_of_movies': stats[1],
     #     'avg_length': stats[2]
     # }
+
     return dict({'genre': stats[0],
                  'number_of_movies': stats[1],
                  'avg_length': stats[2]})
@@ -75,7 +77,7 @@ def top_five_directors_for(db, genre_name):
 def movie_duration_buckets(db):
     '''return the movie counts grouped by bucket of 30 min duration'''
     query = """
-        SELECT (minutes / 30+1)*30 time_range, COUNT(*)
+        SELECT (minutes / 30+1) * 30 time_range, COUNT(*)
         FROM movies
         WHERE minutes IS NOT NULL
         GROUP BY time_range
@@ -103,4 +105,6 @@ def top_five_youngest_newly_directors(db):
     return top_5
 
 # print(stats_on(db, 'Action,Adventure,Comedy'))
-print(detailed_movies(db))
+print(late_released_movies(db))
+# print(top_five_directors_for(db, 'Action,Adventure,Comedy'))
+# print(top_five_youngest_newly_directors(db))

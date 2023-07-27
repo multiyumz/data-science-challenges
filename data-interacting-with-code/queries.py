@@ -7,7 +7,7 @@ db = conn.cursor()
 def directors_count(db):
     # return the number of directors contained in the database
     query = """SELECT COUNT(*)
-                FROM directors"""
+            FROM directors"""
     db.execute(query)
     count = db.fetchone()
     return count[0]
@@ -23,7 +23,7 @@ def directors_list(db):
     # for director in directors:
     #     lst.append(director[0])
     # return lst
-    [director[0] for director in directors]
+    return [director[0] for director in directors]
 
 def love_movies(db):
     # return the list of all movies which contain the exact word "love"
@@ -69,5 +69,5 @@ def movies_longer_than(db, min_length):
     return [movie[0] for movie in longer_movies]
 
 
-print(directors_named_like_count(db, 'Jones'))
+print(movies_longer_than(db, 30))
 # print("test")
