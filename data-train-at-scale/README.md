@@ -234,11 +234,11 @@ Now that you've managed to make the package work for a small dataset, time to se
 
 👉 Change `ml_logic.params.DATA_SIZE` to `all` to start getting serious!
 
-🕵️ Investigate which part of your code takes **the most time** and uses **the most memory**  using `ml_logic.utils.simple_time_and_memory_tracker` to decorate the methods of your choice.
+🕵️ Investigate which part of your code takes **the most time** and uses **the most memory**  using `taxifare.utils.simple_time_and_memory_tracker` to decorate the methods of your choice.
 
 ```python
 # taxifare.ml_logic.data.py
-from taxifare.ml_logic.utils import simple_time_and_memory_tracker
+from taxifare.utils import simple_time_and_memory_tracker
 
 @simple_time_and_memory_tracker
 def clean_data() -> pd.DataFrame:

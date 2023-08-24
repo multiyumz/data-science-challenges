@@ -2,9 +2,9 @@ import os
 import numpy as np
 
 ##################  VARIABLES  ##################
-DATA_SIZE = "1k" # ["1k", "200k", "all"]
-CHUNK_SIZE = 200
-GCP_PROJECT = "<your project id>" # TO COMPLETE
+DATA_SIZE = "all" # ["1k", "200k", "all"]
+CHUNK_SIZE = 100000
+GCP_PROJECT = "wagon-bootcamp-356713" # TO COMPLETE
 GCP_PROJECT_WAGON = "wagon-public-datasets"
 BQ_DATASET = "taxifare"
 BQ_REGION = "EU"
@@ -26,4 +26,3 @@ DTYPES_RAW = {
 }
 
 DTYPES_PROCESSED = np.float32
-
