@@ -35,7 +35,7 @@ def preprocess_features(X: pd.DataFrame) -> np.ndarray:
         timedelta_min = 0
         timedelta_max = 2090
 
-        time_categories = [
+        time_categories = [ 
             np.arange(0, 7, 1),  # days of the week
             np.arange(1, 13, 1)  # months of the year
         ]

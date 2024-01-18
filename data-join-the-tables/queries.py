@@ -52,7 +52,7 @@ def best_employee(db):
                 SUM(details.UnitPrice * details.Quantity) AS cumulative_amount
             FROM OrderDetails AS details
             JOIN Orders on details.OrderID = orders.OrderID
-            JOIN Employees on Employees.EmployeeID = orders.EmployeeID
+            JOIN Employees on orders.EmployeeID = Employees.EmployeeID
             GROUP BY Employees.EmployeeID
             ORDER BY cumulative_amount DESC
             LIMIT 1

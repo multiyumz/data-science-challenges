@@ -15,6 +15,15 @@ def detailed_movies(db):
             FROM movies
             JOIN directors on movies.director_id = directors.id
             """
+    # query = """
+    #         SELECT
+    #         movies.title,
+    #         movies.genres,
+    #         directors.name
+    #         FROM directors
+    #         JOIN movies on directors.id = movies.director_id
+    #         """
+
     db.execute(query)
     movies = db.fetchall()
     return movies
@@ -32,6 +41,12 @@ def late_released_movies(db):
     # db.execute(query)
     # latest = db.fetchall()
     latest = db.execute(query).fetchall()
+
+    # lst = []
+    # for late in latest:
+    #     lst.append(late[0])
+    # return lst
+
     return [late[0] for late in latest]
 
 
@@ -47,15 +62,16 @@ def stats_on(db, genre_name):
             """
     db.execute(query, (genre_name,))
     stats = db.fetchone()
-    # return {
-    #     'genre': stats[0],
-    #     'number_of_movies': stats[1],
-    #     'avg_length': stats[2]
-    # }
+    # return stats
+    return {
+        'genre': stats[0],
+        'number_of_movies': stats[1],
+        'avg_length': stats[2]
+    }
 
-    return dict({'genre': stats[0],
-                 'number_of_movies': stats[1],
-                 'avg_length': stats[2]})
+    # return dict({'genre': stats[0],
+    #              'number_of_movies': stats[1],
+    #              'avg_length': stats[2]})
 
 def top_five_directors_for(db, genre_name):
     '''return the top 5 of the directors with the most movies for a given genre'''
@@ -70,6 +86,7 @@ def top_five_directors_for(db, genre_name):
             ORDER BY number_of_movies DESC, directors.name
             LIMIT 5
             """
+
     db.execute(query, (genre_name,))
     top_directors = db.fetchall()
     return top_directors
@@ -77,7 +94,7 @@ def top_five_directors_for(db, genre_name):
 def movie_duration_buckets(db):
     '''return the movie counts grouped by bucket of 30 min duration'''
     query = """
-        SELECT (minutes / 30+1) * 30 time_range, COUNT(*)
+        SELECT (minutes / 30 + 1) * 30 time_range, COUNT(*)
         FROM movies
         WHERE minutes IS NOT NULL
         GROUP BY time_range
@@ -105,6 +122,8 @@ def top_five_youngest_newly_directors(db):
     return top_5
 
 # print(stats_on(db, 'Action,Adventure,Comedy'))
-print(late_released_movies(db))
-# print(top_five_directors_for(db, 'Action,Adventure,Comedy'))
-# print(top_five_youngest_newly_directors(db))
+# print(late_released_movies(db))
+# print(top_five_directors_for(db, "Action,Adventure,Comedy"))
+print(top_five_youngest_newly_directors(db))
+# print(detailed_movies(db))
+# print(movie_duration_buckets(db))

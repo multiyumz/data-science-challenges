@@ -34,4 +34,4 @@ def order_cumulative_amount_per_customer(db):
     orders = db.execute(query).fetchall()
     return orders
 
-print(order_cumulative_amount_per_customer(db))
+print(order_rank_per_customer(db))

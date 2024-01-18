@@ -13,7 +13,7 @@ def fetch_metadata(url):
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        return data['data']
+        return data["data"]
     return ""
 
 # To manually test, please uncomment the following lines and run `python opengraph.py`:

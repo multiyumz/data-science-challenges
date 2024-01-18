@@ -6,32 +6,43 @@ db = conn.cursor()
 
 def get_average_purchase(db):
     # return the average amount spent per order for each customer ordered by customer ID
-    query = """WITH OrderValues AS (
-            SELECT
-                SUM(OrderDetails.UnitPrice * OrderDetails.Quantity) AS value,
-                OrderDetails.OrderID
-            FROM OrderDetails
-            GROUP BY OrderDetails.OrderID
+    # query = """WITH OrderValues AS (
+    #         SELECT
+    #             SUM(OrderDetails.UnitPrice * OrderDetails.Quantity) AS value,
+    #             OrderDetails.OrderID
+    #         FROM OrderDetails
+    #         GROUP BY OrderDetails.OrderID
+    #     )
+    #     SELECT
+    #         Customers.CustomerID,
+    #         ROUND(AVG(OrderValues.value), 2) AS average
+    #     FROM Customers
+    #     JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+    #     JOIN OrderValues ON OrderValues.OrderID = Orders.OrderID
+    #     GROUP BY Customers.CustomerID
+    #     ORDER BY Customers.CustomerID
+    # """
+
+
+    query = """ WITH ORDER_TOTALS AS (
+        SELECT o.customerID, sum(od.Quantity * od.UnitPrice) as amount
+        FROM Orders AS o
+        JOIN OrderDetails as od ON o.OrderID = od.OrderID
+        GROUP BY o.CustomerID, o.OrderID
         )
-        SELECT
-            Customers.CustomerID,
-            ROUND(AVG(OrderValues.value), 2) AS average
-        FROM Customers
-        JOIN Orders ON Customers.CustomerID = Orders.CustomerID
-        JOIN OrderValues ON OrderValues.OrderID = Orders.OrderID
-        GROUP BY Customers.CustomerID
-        ORDER BY Customers.CustomerID
-    """
+        SELECT customerID, ROUND(AVG(amount), 1)
+        FROM ORDER_TOTALS
+        GROUP BY customerID"""
+
     return db.execute(query).fetchall()
 
 def get_general_avg_order(db):
     # return the average amount spent per order
     query = """
         WITH OrderValues AS (
-            SELECT
-                SUM(od.UnitPrice * od.Quantity) AS value
-                FROM OrderDetails od
-                GROUP BY od.OrderID
+        SELECT SUM(od.UnitPrice * od.Quantity) AS value
+        FROM OrderDetails od
+        GROUP BY od.OrderID
         )
         SELECT ROUND(AVG(ov.value), 2)
         FROM OrderValues ov

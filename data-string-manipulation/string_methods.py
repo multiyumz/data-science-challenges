@@ -10,6 +10,7 @@ def add_comma(a_string):
     example: add_comma("John Peter Jude") => "John, Peter, Jude"
     """
     return  a_string.replace(' ', ', ')
+    # return ", ".join(a_string.split())
 
 def belongs_to(a_string, a_word):
     """
@@ -20,25 +21,34 @@ def belongs_to(a_string, a_word):
         return True
     return False
 
+    # return a_word in a_string
+
 def count_repetition(a_string, a_substring):
     """
     returns how many times a_substring occurs in a_string
     example: count_repetition("000123000123", "0") => 6
     """
+
     count = 0
     for i in a_string:
         if a_substring == i:
             count += 1
     return count
 
+    # return a_string.count(a_substring)
+
+
 def is_a_question(a_string):
     """
     returns True if a_string ends with a "?"
     example: is_a_question("How are you?") => True
     """
+
     if a_string[-1] == "?":
         return True
     return False
+
+    # return a_string.endswith("?")
 
 def remove_surrounding_whitespaces(a_string):
     """
@@ -70,6 +80,6 @@ def full_description_formatting(first_name, last_name, age):
      the age using string interpolation
     example: full_description_formatting("john", "doe", 33) => "John Doe is 33"
     """
-    return f"{first_name} {last_name} is {age}"
+    return f"{first_name.capitalize()} {last_name.capitalize()} is {age}"
 
 # print(full_description_formatting("john", "doe", 33))
