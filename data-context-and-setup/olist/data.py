@@ -16,6 +16,7 @@ class Olist:
         # Hint 2: Use os.path library to construct path independent of Mac vs. Unix vs. Windows specificities
 
         # import ipdb; ipdb.set_trace()
+        # test_path = os.path.dirname(__file__)
         root_dir = os.path.dirname(os.path.dirname(__file__))
         csv_path = os.path.join(root_dir, "data", "csv")
 
@@ -32,6 +33,7 @@ class Olist:
             data[key] = pd.read_csv(os.path.join(csv_path,file))
 
         return data
+
 
     def ping(self):
         """
