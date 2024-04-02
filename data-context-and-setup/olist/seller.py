@@ -147,7 +147,7 @@ class Seller:
 
         df = order_sellers.merge(order_reviews, on='order_id')
 
-        df['cost_of_review'] = df.review_score.map({
+        df['cost_of_reviews'] = df.review_score.map({
                                 1: 100,
                                 2: 50,
                                 3: 40,
@@ -158,9 +158,9 @@ class Seller:
             {'dim_is_five_star': 'mean',
             'dim_is_one_star': 'mean',
             'review_score': 'mean',
-            'cost_of_review': 'sum'})
+            'cost_of_reviews': 'sum'})
 
-        result.columns = ['seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score', 'cost_of_review']
+        result.columns = ['seller_id', 'share_of_five_stars', 'share_of_one_stars', 'review_score', 'cost_of_reviews']
 
         return result
 
@@ -194,6 +194,6 @@ class Seller:
         training_set['revenues'] = training_set['months_on_olist'] * olist_monthly_fee \
             + training_set['sales'] * olist_sales_cut
 
-        training_set['profits'] = training_set['revenues'] - training_set['cost_of_review']
+        training_set['profits'] = training_set['revenues'] - training_set['cost_of_reviews']
 
         return training_set
